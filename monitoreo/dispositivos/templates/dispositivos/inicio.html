@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos</title>
+</head>
+<body>
+    <h1>Consumo maximo: {{consumo_maximo}}</h1>
+    {% for p in dispositivos %}
+        
+        {% if p.consumo <= consumo_maximo %} 
+        <p style=color:red >{{p.Nombre}} - consumo:{{p.consumo}}</p>
+
+        {% else%}
+        <p style=color:green> {{p.Nombre}} - consumo:{{p.consumo}}</p>
+
+        {% endif %}
+        
+    {% endfor %}
+</body>
+</html>
