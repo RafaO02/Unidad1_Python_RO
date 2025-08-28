@@ -5,12 +5,31 @@ class Categoria(models.Model):
     nombre = models.CharField(max_length=100)
     DESCRIPCION = models.TextField(blank=True, null=True)
 
-
-class Dispositivo(models.Model):
+class Zona(models.Model):
     nombre = models.CharField(max_length=100)
-    consumo_maximo = models.IntegerField()
-    estado = models.BooleanField(default=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    ubicacion = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.nombre
+
+class Dispositivo(models.Model):
+    nombre = models.CharField(max_length=100)
+    # consumo máximo en Watts (usa Decimal para que concuerde al ERD)
+    consumo_maximo_w = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.BooleanField(default=True)
+    # Relaciones (1→N): una categoría/zona tiene muchos dispositivos
+    categoria = models.ForeignKey(Categoria, on_delete=models.PROTECT, related_name="dispositivos")
+    zona = models.ForeignKey(Zona, on_delete=models.PROTECT, related_name="dispositivos")
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta: #crear índices para optimizar búsquedas por categoría y zona
+        indexes = [
+            models.Index(fields=["categoria"]),
+            models.Index(fields=["zona"]),
+        ]
+
+        #asi se haría una consulta optimizada
+        #Dispositivo.objects.filter(categoria=1)
+        #Dispositivo.objects.filter(zona=1)
