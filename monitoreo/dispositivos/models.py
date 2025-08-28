@@ -33,3 +33,15 @@ class Dispositivo(models.Model):
         #asi se haría una consulta optimizada
         #Dispositivo.objects.filter(categoria=1)
         #Dispositivo.objects.filter(zona=1)
+        
+class Alerta(models.Model):
+    dispositivo = models.ForeignKey(Dispositivo, on_delete=models.CASCADE, related_name="alertas")
+    tipo = models.CharField(max_length=50)  
+    mensaje = models.CharField(max_length=255)
+    umbral_w = models.DecimalField(max_digits=10, decimal_places=2)
+    consumo_registrado_w = models.DecimalField(max_digits=10, decimal_places=2)
+    creado_en = models.DateTimeField(auto_now_add=True)  
+    reconocida = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"[{self.tipo}] {self.dispositivo.nombre} @ {self.creado_en:%Y-%m-%d %H:%M}"
