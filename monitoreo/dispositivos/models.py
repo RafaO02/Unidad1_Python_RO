@@ -1,55 +1,118 @@
 from django.db import models
 
-class Categoria(models.Model):
-    nombre = models.CharField(max_length=100)
-    descripcion = models.TextField(blank=True, null=True)  # antes DESCRIPCION
+
+#-----------------------------------------------
+#   Modelo Base con Atributos Comunes
+#-----------------------------------------------
+
+class BaseModel(models.Model):
+    ESTADO =[
+        ('ACTIVO', 'Activo'),
+        ('INACTIVO', 'Inactivo'),
+    ]
+
+    estado = models.CharField(max_length=10, choices=ESTADO, default='ACTIVO')
+    created_at = models.DateTimeField(auto_now_add=True) # se asigna al crear
+    update_at = models.DateTimeField(auto_now=True) # se actualiza al guardar
+    deleted_at = models.DateTimeField(null=True, blank=True) # se asigna al eliminar
+
+    class Meta:
+        abstract = True # no crea tabla, solo se hereda
+
+
+#-----------------------------------------------
+#   tablas principales
+#-----------------------------------------------
+
+class Organization(BaseModel):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(unique=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
 
     def __str__(self):
-        return self.nombre
-
-
-class Zona(models.Model):
-    nombre = models.CharField(max_length=100)
-    ubicacion = models.CharField(max_length=200, blank=True)
+        return self.name
+    
+class User(BaseModel):
+    username = models.CharField(max_length=150, unique=True)
+    email = models.EmailField(unique=True)
+    password_hash = models.CharField(max_length=128)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='users')
 
     def __str__(self):
-        return self.nombre
+        return self.username
+    
+class Category(BaseModel):
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='categories')
 
+    def __str__(self):
+        return self.name
 
-class Dispositivo(models.Model):
-    nombre = models.CharField(max_length=100)
-    # consumo máximo en Watts (Decimal según ERD)
+class Zone(BaseModel):
+    name = models.CharField(max_length=100)
+    code = models.CharField(max_length=50, unique=True)
+    location = models.CharField(max_length=200)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='zones')
+
+    def __str__(self):
+        return self.name
+
+class Product(BaseModel):
+    name = models.CharField(max_length=255)
+    brand = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE , related_name='products')
+
+    def __str__(self):
+        return f"{self.brand} {self.model}"
+
+class Device(BaseModel):
+    name = models.CharField(max_length=100)
     consumo_maximo_w = models.DecimalField(max_digits=10, decimal_places=2)
     estado = models.BooleanField(default=True)
 
-    # Relaciones (1→N): una categoría/zona tiene muchos dispositivos
-    categoria = models.ForeignKey(
-        Categoria, on_delete=models.PROTECT, related_name="dispositivos"
-    )
-    zona = models.ForeignKey(
-        Zona, on_delete=models.PROTECT, related_name="dispositivos"
-    )
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="devices")
+    zone = models.ForeignKey(Zone, on_delete=models.PROTECT, related_name="devices", blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='devices', blank=True, null=True)
 
     def __str__(self):
-        return self.nombre
+        return self.name
 
-    class Meta:  # índices útiles para filtros frecuentes
+    class Meta:
         indexes = [
-            models.Index(fields=["categoria"]),
-            models.Index(fields=["zona"]),
+            models.Index(fields=["category"]),
+            models.Index(fields=["zone"]),
         ]
 
-
-class Alerta(models.Model):
-    dispositivo = models.ForeignKey(
-        Dispositivo, on_delete=models.CASCADE, related_name="alertas"
-    )
-    tipo = models.CharField(max_length=50)
-    mensaje = models.CharField(max_length=255)
-    umbral_w = models.DecimalField(max_digits=10, decimal_places=2)
-    consumo_registrado_w = models.DecimalField(max_digits=10, decimal_places=2)
-    creado_en = models.DateTimeField(auto_now_add=True)
-    reconocida = models.BooleanField(default=False)
+class Measurement(BaseModel):
+    device = models.ForeignKey(Device, on_delete=models.CASCADE , related_name='measurements')
+    recorded_at = models.DateTimeField()
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    unit = models.CharField(max_length=50)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='measurements')
 
     def __str__(self):
-        return f"[{self.tipo}] {self.dispositivo.nombre} @ {self.creado_en:%Y-%m-%d %H:%M}"
+        return f"{self.device.name} - {self.recorded_at}"
+    
+class Alert(BaseModel):
+    measurement = models.ForeignKey(Measurement, on_delete=models.CASCADE, related_name='alerts')  # Relación con Medición
+    type = models.CharField(max_length=50)  # Tipo de alerta (e.g., "Umbral Excedido")
+    registered_consumption_w = models.DecimalField(max_digits=10, decimal_places=2)  # Consumo registrado que generó la alerta
+    severity = models.CharField(max_length=20)  # Nivel de severidad (e.g., "Alta", "Media", "Baja")
+    message = models.TextField()
+    recognized = models.BooleanField(default=False)  # Si la alerta ha sido reconocida
+    treashold_w = models.DecimalField(max_digits=10, decimal_places=2)  # Valor del umbral que se superó
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='alerts')
+
+    def __str__(self):
+        return f"Alert {self.severity} at {self.created_at}"
+
+class ProductAlert(BaseModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='product_alerts')
+    alert = models.ForeignKey(Alert, on_delete=models.CASCADE, related_name='product_alerts')
+
+    class Meta:
+        unique_together = ('product', 'alert')

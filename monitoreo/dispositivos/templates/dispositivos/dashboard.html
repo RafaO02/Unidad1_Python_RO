@@ -1,0 +1,64 @@
+<h1>Dashboard</h1>
+
+<!-- Tarjetas con resumen -->
+<div class="row">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Dispositivos por Categoría</div>
+            <div class="card-body">
+                <ul>
+                    {% for category in devices_by_category %}
+                        <li>{{ category.category__name }}: {{ category.count }} dispositivos</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Dispositivos por Zona</div>
+            <div class="card-body">
+                <ul>
+                    {% for zone in devices_by_zone %}
+                        <li>{{ zone.zone__name }}: {{ zone.count }} dispositivos</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Alertas de la Semana</div>
+            <div class="card-body">
+                <ul>
+                    {% for alert in alert_count_by_severity %}
+                        <li>{{ alert.severity }}: {{ alert.count }} alertas</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de las últimas 10 mediciones -->
+<h2>Últimas 10 Mediciones</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Fecha/Hora</th>
+            <th>Dispositivo</th>
+            <th>Valor</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for measurement in latest_measurements %}
+            <tr>
+                <td>{{ measurement.recorded_at }}</td>
+                <td>{{ measurement.device.name }}</td>
+                <td>{{ measurement.value }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
