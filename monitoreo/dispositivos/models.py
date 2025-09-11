@@ -98,13 +98,19 @@ class Measurement(BaseModel):
         return f"{self.device.name} - {self.recorded_at}"
     
 class Alert(BaseModel):
-    measurement = models.ForeignKey(Measurement, on_delete=models.CASCADE, related_name='alerts')  # Relación con Medición
-    type = models.CharField(max_length=50)  # Tipo de alerta (e.g., "Umbral Excedido")
-    registered_consumption_w = models.DecimalField(max_digits=10, decimal_places=2)  # Consumo registrado que generó la alerta
-    severity = models.CharField(max_length=20)  # Nivel de severidad (e.g., "Alta", "Media", "Baja")
+    SEVERITY_CHOICES = [
+        ('grave', 'Grave'),
+        ('alto', 'Alto'),
+        ('mediano', 'Mediano'),
+        ('bajo', 'Bajo'),
+    ]
+    measurement = models.ForeignKey(Measurement, on_delete=models.CASCADE, related_name='alerts')
+    type = models.CharField(max_length=50)
+    registered_consumption_w = models.DecimalField(max_digits=10, decimal_places=2)
+    severity = models.CharField(max_length=20, choices=SEVERITY_CHOICES)
     message = models.TextField()
-    recognized = models.BooleanField(default=False)  # Si la alerta ha sido reconocida
-    treashold_w = models.DecimalField(max_digits=10, decimal_places=2)  # Valor del umbral que se superó
+    recognized = models.BooleanField(default=False)
+    treashold_w = models.DecimalField(max_digits=10, decimal_places=2)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='alerts')
 
     def __str__(self):

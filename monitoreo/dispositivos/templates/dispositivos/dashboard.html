@@ -21,7 +21,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.7em 0;
+            padding: 0.7em 1.5em; /* Aumenta el padding lateral */
             border-bottom: 1px solid #eee;
             font-size: 1.05em;
         }
@@ -36,6 +36,63 @@
             font-weight: 600;
             font-size: 1em;
             border: 1px solid #e0e0e0;
+        }
+        .card-body.px-2 {
+            padding-left: 1.5rem !important;
+            padding-right: 1.5rem !important;
+        }
+        .list-item-centered {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.7em 1.5em;
+            border-bottom: 1px solid #eee;
+            font-size: 1.05em;
+        }
+        .list-item-centered:last-child {
+            border-bottom: none;
+        }
+        .pill {
+            background: #f1f3f4;
+            color: #212529;
+            border-radius: 1em;
+            padding: 0.2em 0.9em;
+            font-weight: 600;
+            font-size: 1em;
+            border: 1px solid #e0e0e0;
+            min-width: 2.2em;
+            text-align: center;
+            display: inline-block;
+        }
+        .alert-pill {
+            display: inline-block;
+            margin-right: 0.5em;
+            margin-bottom: 0.5em;
+            padding: 0.2em 1em;
+            border-radius: 0.7em;
+            font-size: 1em;
+            border: 1px solid #e0e0e0;
+        }
+        .alert-pill.severity-grave {
+            background: #212529;
+            color: #fff;
+            font-weight: 900;
+        }
+        .alert-pill.severity-alto {
+            background: #343a40;
+            color: #fff;
+            font-weight: 700;
+        }
+        .alert-pill.severity-mediano {
+            background: #dee2e6;
+            color: #495057;
+            font-weight: 500;
+        }
+        .alert-pill.severity-bajo {
+            background: #fff;
+            color: #212529;
+            font-weight: 400;
+            border: 1px solid #dee2e6;
         }
     </style>
 </head>
@@ -58,10 +115,13 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">Dispositivos por Categoría</div>
-                    <div class="card-body">
+                    <div class="card-body px-2">
                         <ul class="list-unstyled mb-0">
                             {% for category in devices_by_category %}
-                                <li>{{ category.category__name }}: <span class="fw-bold">{{ category.count }}</span> dispositivos</li>
+                                <li class="list-item-centered">
+                                    <span>{{ category.category__name }}</span>
+                                    <span class="pill">{{ category.count }}</span>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -73,9 +133,9 @@
                     <div class="card-body px-2">
                         <ul class="list-unstyled mb-0">
                             {% for zone in devices_by_zone %}
-                                <li class="zone-list-item">
+                                <li class="list-item-centered">
                                     <span>{{ zone.zone__name }}</span>
-                                    <span class="zone-pill">{{ zone.count }}</span>
+                                    <span class="pill">{{ zone.count }}</span>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -85,15 +145,14 @@
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-header">Alertas de la Semana</div>
-                    <div class="card-body">
-                        <ul class="list-inline mb-0">
+                    <div class="card-body px-2">
+                        <div>
                             {% for alert in alert_count_by_severity %}
-                                <li class="list-inline-item">
-                                    <span class="severity-badge severity-{{ alert.severity }}">{{ alert.severity }}</span>
-                                    <span class="fw-bold">{{ alert.count }}</span> alertas
-                                </li>
+                                <span class="alert-pill severity-{{ alert.severity }}">
+                                    {{ alert.severity|title }}: {{ alert.count }}
+                                </span>
                             {% endfor %}
-                        </ul>
+                        </div>
                         <small class="text-muted d-block mt-2">* Criterio de severidad configurable por dispositivo</small>
                     </div>
                 </div>
@@ -136,17 +195,7 @@
                         <a href="#" class="small">Ver todas</a>
                     </div>
                     <div class="card-body">
-                        <!-- Aquí puedes agregar el loop de alertas recientes si lo tienes -->
-                        <div class="mb-2">
-                            <span class="fw-bold">Disp-004</span>
-                            <span class="badge bg-danger ms-2">Grave</span>
-                            <div class="small text-muted">Valor fuera de rango: 120 (min: 220)</div>
-                        </div>
-                        <div>
-                            <span class="fw-bold">Disp-002</span>
-                            <span class="badge bg-warning ms-2">Alta</span>
-                            <div class="small text-muted">Desviación sostenida</div>
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -177,27 +226,7 @@
                                 <button class="btn btn-dark w-100">Aplicar filtros</button>
                             </div>
                         </form>
-                        <div class="row g-2">
-                            <div class="col-md-4">
-                                <div class="border rounded p-2">
-                                    <span class="fw-bold">Disp-001</span>
-                                    <div class="small text-muted">Categoría A · Zona Norte</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="border rounded p-2">
-                                    <span class="fw-bold">Disp-002</span>
-                                    <div class="small text-muted">Categoría B · Zona Centro</div>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="border rounded p-2">
-                                    <span class="fw-bold">Disp-003</span>
-                                    <div class="small text-muted">Categoría A · Zona Sur</div>
-                                </div>
-                            </div>
-                            <!-- Puedes hacer un loop aquí para los dispositivos -->
-                        </div>
+                        
                     </div>
                 </div>
             </div>
