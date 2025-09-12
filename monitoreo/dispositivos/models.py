@@ -45,7 +45,6 @@ class User(BaseModel):
 class Category(BaseModel):
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='categories')
 
     def __str__(self):
         return self.name
@@ -63,7 +62,6 @@ class Product(BaseModel):
     name = models.CharField(max_length=255)
     brand = models.CharField(max_length=100)
     model = models.CharField(max_length=100)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='products')
     category = models.ForeignKey(Category, on_delete=models.CASCADE , related_name='products')
 
     def __str__(self):
@@ -71,29 +69,32 @@ class Product(BaseModel):
 
 class Device(BaseModel):
     name = models.CharField(max_length=100)
-    consumo_maximo_w = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.BooleanField(default=True)
+    max_consumption_w = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=True)
 
-    category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="devices")
     zone = models.ForeignKey(Zone, on_delete=models.PROTECT, related_name="devices", blank=True, null=True)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='devices', blank=True, null=True)
+    Product = models.ForeignKey(Product, on_delete=models.PROTECT, related_name="devices", blank=True, null=True)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='devices')
+    Category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="devices", blank=True, null=True)
+
 
     def __str__(self):
         return self.name
 
     class Meta:
         indexes = [
-            models.Index(fields=["category"]),
+            models.Index(fields=["Product"]),
             models.Index(fields=["zone"]),
+            models.Index(fields=["organization"]),
+            models.Index(fields=["Category"]),
         ]
 
 class Measurement(BaseModel):
-    device = models.ForeignKey(Device, on_delete=models.CASCADE , related_name='measurements')
+ 
     recorded_at = models.DateTimeField()
     value = models.DecimalField(max_digits=10, decimal_places=2)
     unit = models.CharField(max_length=50)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='measurements')
-
+    device = models.ForeignKey(Device, on_delete=models.CASCADE , related_name='measurements')
     def __str__(self):
         return f"{self.device.name} - {self.recorded_at}"
     
@@ -111,7 +112,7 @@ class Alert(BaseModel):
     message = models.TextField()
     recognized = models.BooleanField(default=False)
     treashold_w = models.DecimalField(max_digits=10, decimal_places=2)
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE , related_name='alerts')
+
 
     def __str__(self):
         return f"Alert {self.severity} at {self.created_at}"

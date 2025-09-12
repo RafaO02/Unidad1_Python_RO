@@ -100,9 +100,8 @@
     <div class="dashboard-header d-flex justify-content-between align-items-center">
         <div>
             <span class="fs-4 fw-bold">EcoEnergy</span>
-            <span class="ms-4">Dashboard</span>
-            <span class="ms-4">Dispositivos</span>
-            <span class="ms-4">Mediciones</span>
+            <a href="{% url 'devices' %}" class="ms-4 text-white text-decoration-none">Devices</a>
+            <a href="{% url 'measurements' %}" class="ms-4 text-white text-decoration-none">Measurement</a>
         </div>
         <div>
             <button class="btn btn-outline-light btn-sm me-2">Iniciar sesión</button>
@@ -119,7 +118,7 @@
                         <ul class="list-unstyled mb-0">
                             {% for category in devices_by_category %}
                                 <li class="list-item-centered">
-                                    <span>{{ category.category__name }}</span>
+                                    <span>{{ category.Category__name }}</span>
                                     <span class="pill">{{ category.count }}</span>
                                 </li>
                             {% endfor %}
@@ -164,7 +163,7 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>Últimas 10 Mediciones</span>
-                        <a href="#" class="small">Ver todas</a>
+                        <a href="{% url 'measurements' %}" class="small">Ver todas</a>
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-sm mb-0">
@@ -194,8 +193,22 @@
                         <span>Alertas Recientes</span>
                         <a href="#" class="small">Ver todas</a>
                     </div>
-                    <div class="card-body">
-                        
+                    <div class="card-body px-2">
+                        {% if recent_alerts %}
+                            {% for alert in recent_alerts %}
+                                <div class="mb-3 pb-2" style="border-bottom:1px solid #eee;">
+                                    <div class="fw-bold d-flex justify-content-between align-items-center">
+                                        <span>{{ alert.measurement.device.name }}</span>
+                                        <span class="alert-pill severity-{{ alert.severity|lower }}">
+                                            {{ alert.severity|title }}
+                                        </span>
+                                    </div>
+                                    <div class="text-muted">{{ alert.message }}</div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="alert alert-info mb-0">No hay alertas recientes.</div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -206,27 +219,46 @@
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span>Dispositivos</span>
-                        <a href="#" class="small">Ir a listado</a>
+                        <a href="{% url 'devices' %}" class="small">Ir a listado</a>
                     </div>
                     <div class="card-body">
-                        <form class="row g-2 mb-3">
+                        <form method="get" class="row g-2 mb-3">
                             <div class="col-md-4">
-                                <select class="form-select">
-                                    <option>Todas</option>
-                                    <!-- Opciones de categoría -->
+                                <label class="form-label mb-1">Categoría</label>
+                                <select name="category" class="form-select">
+                                    <option value="all">Todas</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                             <div class="col-md-4">
-                                <select class="form-select">
-                                    <option>Todas</option>
-                                    <!-- Opciones de zona -->
+                                <label class="form-label mb-1">Zona</label>
+                                <select name="zone" class="form-select">
+                                    <option value="all">Todas</option>
+                                    {% for zone in zones %}
+                                        <option value="{{ zone.id }}" {% if selected_zone == zone.id|stringformat:"s" %}selected{% endif %}>{{ zone.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
-                            <div class="col-md-4">
-                                <button class="btn btn-dark w-100">Aplicar filtros</button>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-dark w-100">Aplicar filtros</button>
                             </div>
                         </form>
-                        
+                        <div class="row g-3">
+                            {% for device in devices %}
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded bg-light h-100">
+                                    <div class="fw-bold fs-5 mb-1">{{ device.name }}</div>
+                                    <div class="text-muted">{{ device.Category.name }} &bull; {{ device.zone.name }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="col">
+                                <div class="alert alert-info">No hay dispositivos para los filtros seleccionados.</div>
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -239,3 +271,4 @@
     </div>
 </body>
 </html>
+``` 

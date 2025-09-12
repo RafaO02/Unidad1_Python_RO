@@ -12,8 +12,8 @@ admin.site.register(Organization)
 @admin.register(Device)
 class DispositivoAdmin(admin.ModelAdmin):
 
-    list_display = ("name", "category", "zone", "created_at", "update_at")
-    list_filter = ("category", "zone")
+    list_display = ("name", "zone", "created_at", "update_at")
+    list_filter = ("zone","created_at", "update_at")
     search_fields = ("name",)
 
 

@@ -1,6 +1,3 @@
-
-
-
 """
 URL configuration for monitoreo project.
 
@@ -20,8 +17,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from dispositivos.views import dashboard
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('dashboard/', dashboard, name='dashboard'),
+    path('devices/', views.devices, name='devices'),
+    path('devices/<int:id>/', views.device_detail, name='device_detail'),
+    path('measurements/', views.measurements, name='measurements'),
+    path('measurements/<int:id>/', views.measurement_detail, name='measurements_detail'),
 ]
