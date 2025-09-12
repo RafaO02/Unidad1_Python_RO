@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from dispositivos.views import dashboard
 from . import views
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +28,8 @@ urlpatterns = [
     path('devices/<int:id>/', views.device_detail, name='device_detail'),
     path('measurements/', views.measurements, name='measurements'),
     path('measurements/<int:id>/', views.measurement_detail, name='measurements_detail'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('register/', views.register, name='register'),  # Registro de empresa
+
+
 ]

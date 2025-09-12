@@ -1,6 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Device, Category, Alert, Measurement, Zone
 from django.db.models import Count
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
 
 
 def dashboard(request):
@@ -84,3 +86,16 @@ def measurement_detail(request, id):
     return render(request, 'dispositivos/measurements_detail.html', {
         'measurements': measurement
     })
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Registro exitoso. Ya puedes iniciar sesión.')
+            return redirect('login')
+    else:
+        form = UserCreationForm()
+    return render(request, 'dispositivos/register.html', {'form': form})
+
+
