@@ -3,34 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alertas de la Semana</title>
+    <title>Historial de Mediciones</title>
 </head>
 <body>
 
-    <h1>Alertas de la Semana</h1>
+    <h1>Historial de Mediciones</h1>
 
     <table>
         <thead>
             <tr>
+                <th>Fecha / Hora</th>
+                <th>Valor</th>
                 <th>Dispositivo</th>
-                <th>Mensaje</th>
                 <th>Severidad</th>
-                <th>Fecha</th>
             </tr>
         </thead>
         <tbody>
-            {% for alert in alerts %}
+            {% for measurement in measurements %}
                 <tr>
-                    <td>{{ alert.dispositivo.nombre }}</td>
-                    <td>{{ alert.mensaje }}</td>
-                    <td>{{ alert.severidad }}</td>
-                    <td>{{ alert.fecha_generada|date:"Y-m-d H:i" }}</td>
+                    <td>{{ measurement.fecha_registro|date:"Y-m-d H:i" }}</td>
+                    <td>{{ measurement.valor }} {{ measurement.unidad }}</td>
+                    <td>
+                        <a href="{% url 'device_detail' measurement.dispositivo.id %}">
+                            {{ measurement.dispositivo.nombre }}
+                        </a>
+                    </td>
+                    <td>{{ measurement.severity }}</td>
                 </tr>
             {% empty %}
-                <tr><td colspan="4">No hay alertas esta semana.</td></tr>
+                <tr><td colspan="4">No hay mediciones registradas.</td></tr>
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Paginación -->
+    {% if is_paginated %}
+        <div>
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            {% endif %}
+
+            Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <a href="{% url 'dashboard' %}">Volver al dashboard</a>
 
