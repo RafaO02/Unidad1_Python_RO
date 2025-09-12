@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dispositivos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between mb-4">
+            <!-- Volver al Dashboard -->
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">Volver al dashboard</a>
+        </div>
+
+        <!-- Filtros y búsqueda -->
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <select class="form-select" aria-label="Seleccionar categoría">
+                    <option selected>Todas las categorías</option>
+                    <option value="1">Category A</option>
+                    <option value="2">Category B</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" aria-label="Seleccionar zona">
+                    <option selected>Todas las zonas</option>
+                    <option value="1">North</option>
+                    <option value="2">Center</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Buscar dispositivo">
+                    <button class="btn btn-outline-secondary" type="button">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Botón de aplicar filtros -->
+        <div class="d-flex justify-content-end mb-4">
+            <button class="btn btn-dark">Aplicar filtros</button>
+        </div>
+
+        <!-- Tabla de dispositivos -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Zona</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Disp-001</td>
+                        <td>Category A</td>
+                        <td>North</td>
+                        <td><a href="#" class="btn btn-info btn-sm">Ver detalle</a></td>
+                    </tr>
+                    <tr>
+                        <td>Disp-002</td>
+                        <td>Category B</td>
+                        <td>Center</td>
+                        <td><a href="#" class="btn btn-info btn-sm">Ver detalle</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Paginación -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item active">
+                    <a class="page-link" href="#">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Agregar el script de Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

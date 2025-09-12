@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alertas de la Semana</title>
+</head>
+<body>
+
+    <h1>Alertas de la Semana</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Dispositivo</th>
+                <th>Mensaje</th>
+                <th>Severidad</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for alert in alerts %}
+                <tr>
+                    <td>{{ alert.dispositivo.nombre }}</td>
+                    <td>{{ alert.mensaje }}</td>
+                    <td>{{ alert.severidad }}</td>
+                    <td>{{ alert.fecha_generada|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% empty %}
+                <tr><td colspan="4">No hay alertas esta semana.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'dashboard' %}">Volver al dashboard</a>
+
+</body>
+</html>

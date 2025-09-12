@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-cwo*amscxn@+8#sxqs%rn+wjowo)_w(4e5k_47zddcn427ho)n'
+SECRET_KEY = 'django-insecure-x*8*3hn&yk5e16*vwc3ngnb(4n4*t9suhs4@=82t$mkyf385ro'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dispositivos',
+    
 ]
 
 MIDDLEWARE = [
@@ -105,7 +106,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+
+
+TIME_ZONE = 'UTC'  # O la zona horaria que prefieras, como 'America/Mexico_City'
 
 USE_I18N = True
 
@@ -121,3 +124,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'dispositivos.CustomUser'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
